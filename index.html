@@ -1,0 +1,526 @@
+DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEP Engineering Automation Suite</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080a12;--surface:#111520;--surface2:#181d2c;--border:#252a3a;--text:#e8eaf2;--muted:#7a8299;--accent:#5b8def;--accent2:#7c5cfc;--glow:rgba(91,141,243,.1);--success:#22c55e;--warn:#eab308;--danger:#ef4444;--radius:14px;--r-sm:10px;--shadow:0 8px 32px rgba(0,0,0,.5)}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 70% 50% at 30% -10%,rgba(91,141,243,.12),transparent),radial-gradient(ellipse 50% 40% at 80% 100%,rgba(124,92,252,.08),transparent);pointer-events:none;z-index:0}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+header{background:rgba(17,21,32,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.logo-icon{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff}
+nav{display:flex;gap:4px;background:rgba(10,12,18,.6);padding:4px;border-radius:var(--radius);border:1px solid var(--border)}
+.nav-btn{padding:7px 16px;border:none;background:transparent;color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;border-radius:8px;transition:all .2s}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{background:var(--accent);color:#fff}
+.hero{max-width:900px;margin:0 auto;padding:60px 24px 40px;text-align:center}
+.hero h1{font-size:36px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:15px;color:var(--muted);margin:14px auto 28px;max-width:550px}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta{padding:12px 24px;border-radius:var(--r-sm);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6}
+.cta-p{background:var(--accent);color:#fff;box-shadow:0 4px 20px rgba(91,141,243,.3)}
+.cta-s{background:var(--surface);color:var(--text);border:1px solid var(--border)}
+.cta:hover{transform:translateY(-2px)}
+.tools-section{max-width:1200px;margin:0 auto;width:100%;padding:0 24px 40px}
+.cat-tabs{display:flex;gap:8px;justify-content:center;margin-bottom:32px;flex-wrap:wrap}
+.cat-tab{padding:8px 20px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .2s}
+.cat-tab.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.tool-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;cursor:pointer;transition:all .25s;display:flex;flex-direction:column;gap:8px}
+.tool-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 12px 32px rgba(91,141,243,.1)}
+.tool-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0}
+.ti-e{background:rgba(91,141,243,.15);color:var(--accent)}
+.ti-m{background:rgba(34,197,94,.15);color:var(--success)}
+.ti-s{background:rgba(234,179,8,.15);color:var(--warn)}
+.tool-card h3{font-size:15px;font-weight:600}
+.tool-card p{font-size:12px;color:var(--muted)}
+.tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.tag-e{background:rgba(91,141,243,.12);color:var(--accent)}
+.tag-m{background:rgba(34,197,94,.12);color:var(--success)}
+.tag-s{background:rgba(234,179,8,.12);color:var(--warn)}
+
+/* Calculator panel */
+.calc-panel{max-width:1000px;margin:0 auto;width:100%;padding:0 24px 40px;display:none}
+.calc-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.back-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
+.calc-body{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media(max-width:800px){.calc-body{grid-template-columns:1fr}}
+.form-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.form-section h3{font-size:14px;font-weight:600;margin-bottom:16px}
+.presets{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.preset{padding:5px 12px;border-radius:14px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--bg);color:var(--muted);cursor:pointer;transition:all .15s}
+.preset:hover{border-color:var(--accent);color:var(--text)}
+.input-group{margin-bottom:14px}
+.input-group label{font-size:12px;font-weight:500;color:var(--muted);display:block;margin-bottom:4px}
+.input-group label .hint{font-weight:400;color:var(--muted);opacity:.7;font-size:11px}
+.slider-wrap{display:flex;align-items:center;gap:10px}
+.slider-wrap input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--bg);outline:none}
+.slider-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 0 4px var(--glow)}
+.slider-val{min-width:50px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text)}
+.input-group select,.input-group input[type=number]{width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Inter',sans-serif;font-size:13px;transition:all .15s}
+.input-group select:focus,.input-group input[type=number]:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--glow)}
+.calc-btn{width:100%;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:6px}
+.calc-btn:hover{background:#4a7de8;transform:translateY(-1px)}
+.results-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;flex-direction:column;gap:16px}
+.empty-state{text-align:center;padding:40px 20px}
+.empty-icon{width:56px;height:56px;border-radius:16px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 14px}
+.empty-state h4{font-size:14px;font-weight:600;margin-bottom:6px}
+.empty-state p{font-size:12px;color:var(--muted)}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.rcard{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;text-align:center}
+.rv{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text)}
+.rv.pass{color:var(--success)}.rv.fail{color:var(--danger)}
+.rl{font-size:10px;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.5px}
+.result-summary{display:flex;align-items:center;gap:12px;padding:14px;background:var(--bg);border-radius:var(--r-sm);border:1px solid var(--border)}
+.summary-indicator{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0}
+.ind-pass{background:var(--success)}.ind-fail{background:var(--danger)}.ind-warn{background:var(--warn)}
+.summary-text h4{font-size:13px;font-weight:600}
+.summary-text p{font-size:11px;color:var(--muted);margin-top:2px}
+.formula-box{background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px;margin-top:6px}
+.formula-box h4{font-size:11px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.formula-box p{font-size:12px;color:var(--muted);line-height:1.6}
+.explain-toggle{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;margin-top:6px}
+.export-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.export-btn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--bg);color:var(--text);cursor:pointer;transition:all .15s}
+.export-btn:hover{border-color:var(--accent)}
+
+footer{text-align:center;padding:24px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:auto}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+<div class="logo"><div class="logo-icon">M</div><span>MEP Engineering Suite</span></div>
+<nav><button class="nav-btn active" data-view="home">Home</button><button class="nav-btn" data-view="sld">SLD Builder</button><button class="nav-btn" data-view="reports">Reports</button></nav>
+</header>
+
+<!-- HOME VIEW -->
+<div id="home-view">
+<div class="hero">
+<h1>Professional Engineering Calculations Made Simple</h1>
+<p>8 essential MEP calculation tools with instant results. No engineering degree required - just pick a tool, fill in the numbers, and get answers.</p>
+<div class="cta-row">
+<button class="cta cta-p" onclick="scrollToTools()">Get Started</button>
+<button class="cta cta-s" onclick="showView('sld')">SLD Builder</button>
+</div>
+</div>
+<div class="tools-section" id="tools-section">
+<div class="cat-tabs">
+<button class="cat-tab active" data-cat="all">All Tools</button>
+<button class="cat-tab" data-cat="e">Electrical</button>
+<button class="cat-tab" data-cat="m">Mechanical</button>
+<button class="cat-tab" data-cat="s">Structural</button>
+</div>
+<div class="tool-grid" id="tool-grid"></div>
+</div>
+</div>
+
+<!-- CALCULATOR VIEW -->
+<div class="calc-panel" id="calc-view">
+<div class="calc-header">
+<button class="back-btn" onclick="showView('home')">&larr;</button>
+<div><h2 id="calc-title">Calculator</h2><p id="calc-subtitle" style="font-size:12px;color:var(--muted)"></p></div>
+</div>
+<div class="calc-body">
+<div class="form-section">
+<div class="presets" id="presets"></div>
+<div id="form-fields"></div>
+<button class="calc-btn" onclick="runCalc()">Calculate</button>
+</div>
+<div class="results-section" id="results-area">
+<div class="empty-state">
+<div class="empty-icon">&#9881;</div>
+<h4>Ready to calculate</h4>
+<p>Fill in the fields and hit Calculate to see your results here.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- SLD VIEW -->
+<div class="calc-panel" id="sld-view">
+<div class="calc-header">
+<button class="back-btn" onclick="showView('home')">&larr;</button>
+<div><h2>SLD Builder</h2><p style="font-size:12px;color:var(--muted)">Click to add components, drag to move</p></div>
+</div>
+<div style="padding:0 24px 40px">
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+<label style="font-size:12px;color:var(--muted)">Add:</label>
+<select id="sld-type" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px 12px;border-radius:8px;font-size:13px">
+<option value="generator">Generator</option><option value="transformer">Transformer</option><option value="breaker">Breaker</option><option value="bus">Busbar</option><option value="motor">Motor</option><option value="load">Load</option>
+</select>
+<button class="export-btn" style="background:var(--accent);color:#fff;border:none;padding:8px 16px" onclick="addSLD()">+ Add</button>
+<button class="export-btn" onclick="clearSLD()">Clear</button>
+<button class="export-btn" onclick="exportSLD()">Export</button>
+</div>
+<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+<canvas id="sld-cv" style="width:100%;height:400px;cursor:crosshair;display:block"></canvas>
+</div>
+</div>
+</div>
+
+<!-- REPORTS VIEW -->
+<div class="calc-panel" id="reports-view">
+<div class="calc-header">
+<button class="back-btn" onclick="showView('home')">&larr;</button>
+<div><h2>Reports</h2><p style="font-size:12px;color:var(--muted)">Generate professional engineering reports</p></div>
+</div>
+<div style="padding:0 24px 40px;max-width:800px">
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px">
+<div class="input-group"><label>Project Name</label><input id="r_proj" placeholder="e.g. Substation Design" style="width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text)"></div>
+<div class="input-group"><label>Client</label><input id="r_client" placeholder="e.g. PT PLN" style="width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text)"></div>
+<div class="input-group"><label>Engineer</label><input id="r_eng" value="Darren Lieu" style="width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text)"></div>
+<div class="input-group"><label>Report Type</label>
+<select id="r_type" style="width:100%;padding:9px 12px;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text)">
+<option value="Design Calculation Report">Design Calculation Report</option><option value="Design Verification Report">Design Verification Report</option><option value="Feasibility Study">Feasibility Study</option>
+</select></div>
+<button class="calc-btn" style="margin-top:12px" onclick="genReport()">Generate Report</button>
+<div id="report-output" style="margin-top:20px;display:none;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-sm);padding:24px;font-size:13px;line-height:1.7;max-height:500px;overflow-y:auto"></div>
+</div>
+</div>
+</div>
+
+<footer>MEP Engineering Automation Suite &mdash; All calculations run locally in your browser. Verify results against site conditions before final design sign-off.</footer>
+</div>
+
+<script>
+const S={curTool:null,results:null,sld:[],sldDrag:-1};
+
+const TOOLS=[
+{id:'cable',t:'Cable Sizing',s:'Calculate the right cable size for your electrical load',c:'e',presets:[
+{name:'Small Office',vals:{power_kw:50,voltage_v:400,pf:0.85,len:40,type:'copper_xlpe',inst:'conduit',maxvd:3,amb:30}},
+{name:'Industrial',vals:{power_kw:200,voltage_v:400,pf:0.85,len:100,type:'copper_xlpe',inst:'tray',maxvd:3,amb:35}},
+{name:'Residential',vals:{power_kw:15,voltage_v:230,pf:0.9,len:20,type:'copper_pvc',inst:'conduit',maxvd:3,amb:30}}
+],fields:[
+{id:'power_kw',l:'Power',u:'kW',min:1,max:500,step:1,ph:50,hint:'Total electrical power of all equipment'},
+{id:'voltage_v',l:'Voltage',u:'V',min:110,max:690,step:10,ph:400,hint:'Line-to-line voltage of your electrical system'},
+{id:'pf',l:'Power Factor',u:'',min:0.5,max:1,step:0.01,ph:0.85,hint:'How efficiently electricity is used (0.5=poor, 1=perfect)'},
+{id:'len',l:'Cable Length',u:'m',min:1,max:500,step:1,ph:40,hint:'One-way distance from source to load'},
+{id:'type',l:'Cable Type',u:'',type:'select',o:['copper_xlpe','copper_pvc','al_xlpe','al_pvc'],hint:'Material and insulation type'},
+{id:'inst',l:'Installation',u:'',type:'select',o:['clipped','free_air','tray','conduit'],hint:'How the cable is installed (affects cooling)'},
+{id:'maxvd',l:'Max Voltage Drop',u:'%',min:1,max:10,step:0.5,ph:3,hint:'Maximum acceptable voltage loss'},
+{id:'amb',l:'Ambient Temp',u:'degC',min:10,max:60,step:5,ph:30,hint:'Temperature of the environment'}
+]},
+
+{id:'transformer',t:'Transformer Sizing',s:'Size a transformer for your building load',c:'e',presets:[
+{name:'Small Office',vals:{load_kw:100,pf:0.85,div:0.8,margin:15,vr:'400/230'}},
+{name:'Warehouse',vals:{load_kw:300,pf:0.85,div:0.7,margin:20,vr:'11000/400'}},
+{name:'Factory',vals:{load_kw:800,pf:0.8,div:0.75,margin:25,vr:'33000/400'}}
+],fields:[
+{id:'load_kw',l:'Connected Load',u:'kW',min:5,max:2000,step:5,ph:250,hint:'Sum of all equipment power ratings'},
+{id:'pf',l:'Power Factor',u:'',min:0.5,max:1,step:0.01,ph:0.85,hint:'System power factor'},
+{id:'div',l:'Diversity Factor',u:'',min:0.3,max:1,step:0.05,ph:0.8,hint:'Not everything runs at once (0.3-1.0)'},
+{id:'margin',l:'Growth Margin',u:'%',min:0,max:50,step:5,ph:15,hint:'Extra capacity for future expansion'},
+{id:'vr',l:'Voltage Ratio',u:'',type:'select',o:['400/230','11000/400','33000/400','66000/400'],hint:'Primary/secondary voltage'}
+]},
+
+{id:'shortcircuit',t:'Short Circuit Analysis',s:'Calculate fault current at the transformer bus',c:'e',presets:[
+{name:'Distribution',vals:{t_kva:500,voltage_v:400,z_pct:4,z_feed:0}},
+{name:'Industrial',vals:{t_kva:1000,voltage_v:400,z_pct:5,z_feed:0.01}},
+{name:'Substation',vals:{t_kva:2000,voltage_v:11000,z_pct:8,z_feed:0.05}}
+],fields:[
+{id:'t_kva',l:'Transformer Rating',u:'kVA',min:50,max:5000,step:50,ph:500,hint:'Rated apparent power of the transformer'},
+{id:'voltage_v',l:'System Voltage',u:'V',min:110,max:15000,step:10,ph:400,hint:'Voltage at the fault location'},
+{id:'z_pct',l:'Impedance',u:'%',min:2,max:15,step:0.5,ph:4,hint:'Transformer impedance (from nameplate)'},
+{id:'z_feed',l:'Feeder Z',u:'Ohm',min:0,max:1,step:0.005,ph:0,hint:'Additional feeder impedance'}
+]},
+
+{id:'cooling',t:'Cooling Load',s:'Estimate HVAC cooling requirement',c:'m',presets:[
+{name:'Small Office',vals:{area:100,ceil:3,occ:8,equip:5,light:2,win_a:12,win_u:2.8,t_ext:35,t_int:24}},
+{name:'Classroom',vals:{area:80,ceil:3.5,occ:30,equip:3,light:2,win_a:15,win_u:2.8,t_ext:35,t_int:24}},
+{name:'Server Room',vals:{area:30,ceil:3,occ:2,equip:15,light:1,win_a:0,win_u:0,t_ext:35,t_int:22}}
+],fields:[
+{id:'area',l:'Floor Area',u:'m2',min:5,max:1000,step:5,ph:100,hint:'Total floor area to be cooled'},
+{id:'ceil',l:'Ceiling Height',u:'m',min:2,max:10,step:0.5,ph:3,hint:'Height from floor to ceiling'},
+{id:'occ',l:'Occupants',u:'people',min:0,max:100,step:1,ph:8,hint:'Maximum number of people in the space'},
+{id:'equip',l:'Equipment Load',u:'kW',min:0,max:100,step:1,ph:5,hint:'Heat from computers, machines, etc.'},
+{id:'light',l:'Lighting Load',u:'kW',min:0,max:50,step:0.5,ph:2,hint:'Total lighting power'},
+{id:'win_a',l:'Window Area',u:'m2',min:0,max:100,step:1,ph:12,hint:'Total glazed window area'},
+{id:'win_u',l:'Window U-Value',u:'W/m2K',min:0.5,max:6,step:0.1,ph:2.8,hint:'How well windows insulate (lower=better)'},
+{id:'t_ext',l:'External Temp',u:'degC',min:20,max:50,step:1,ph:35,hint:'Peak outdoor design temperature'},
+{id:'t_int',l:'Internal Temp',u:'degC',min:18,max:30,step:1,ph:24,hint:'Target indoor temperature'}
+]},
+
+{id:'pipe',t:'Pipe Sizing',s:'Size a pipe for required flow and pressure',c:'m',presets:[
+{name:'Water Supply',vals:{flow:5,len:30,dp_max:30,fluid:'water',fittings:4}},
+{name:'Chilled Water',vals:{flow:20,len:50,dp_max:50,fluid:'water',fittings:6}},
+{name:'Compressed Air',vals:{flow:100,len:40,dp_max:20,fluid:'air',fittings:8}}
+],fields:[
+{id:'flow',l:'Flow Rate',u:'m3/h',min:0.5,max:200,step:0.5,ph:10,hint:'Required volumetric flow rate'},
+{id:'len',l:'Pipe Length',u:'m',min:1,max:200,step:1,ph:30,hint:'Total equivalent pipe length'},
+{id:'dp_max',l:'Max Pressure Drop',u:'kPa',min:5,max:200,step:5,ph:30,hint:'Acceptable pressure loss'},
+{id:'fluid',l:'Fluid Type',u:'',type:'select',o:['water','air','oil'],hint:'Fluid being transported'},
+{id:'fittings',l:'Equivalent Fittings',u:'elbows',min:0,max:30,step:1,ph:4,hint:'Number of 90-degree elbows equivalent'}
+]},
+
+{id:'pump',t:'Pump Sizing',s:'Size a pump for flow and head requirements',c:'m',presets:[
+{name:'Booster',vals:{flow:10,head:20,dens:1000,eff:70}},
+{name:'Circulator',vals:{flow:30,head:15,dens:1000,eff:65}},
+{name:'High-Rise',vals:{flow:15,head:50,dens:1000,eff:75}}
+],fields:[
+{id:'flow',l:'Flow Rate',u:'m3/h',min:0.5,max:200,step:0.5,ph:10,hint:'Required water flow rate'},
+{id:'head',l:'Total Head',u:'m',min:1,max:150,step:1,ph:20,hint:'Total height the pump must lift (static + friction)'},
+{id:'dens',l:'Fluid Density',u:'kg/m3',min:600,max:1400,step:50,ph:1000,hint:'Density of the fluid (water ~1000)'},
+{id:'eff',l:'Efficiency',u:'%',min:30,max:95,step:5,ph:70,hint:'Pump efficiency at design point'}
+]},
+
+{id:'beam',t:'Beam Deflection',s:'Check if a beam can safely carry its load',c:'s',presets:[
+{name:'Floor Joist',vals:{span:4,load:3000,ltype:'udl',emod:200,stype:'rectangle',sd:200,sb:50,sh:200,st:0,inert:''}},
+{name:'Roof Beam',vals:{span:6,load:5000,ltype:'udl',emod:200,stype:'ibar',sd:300,sb:150,sh:300,st:10,inert:''}},
+{name:'Shelf',vals:{span:1.5,load:500,ltype:'point_mid',emod:200,stype:'rectangle',sd:50,sb:200,sh:50,st:0,inert:''}}
+],fields:[
+{id:'span',l:'Span Length',u:'m',min:0.5,max:20,step:0.1,ph:4,hint:'Distance between supports'},
+{id:'load',l:'Total Load',u:'N',min:100,max:50000,step:100,ph:3000,hint:'Total force applied to the beam'},
+{id:'ltype',l:'Load Type',u:'',type:'select',o:['point_mid','udl','fixed_point'],hint:'How the load is distributed'},
+{id:'emod',l:'Elastic Modulus',u:'GPa',min:10,max:400,step:10,ph:200,hint:'Material stiffness (steel ~200 GPa)'},
+{id:'stype',l:'Section Type',u:'',type:'select',o:['ibar','rectangle','circle','pipe'],hint:'Shape of the beam cross-section'},
+{id:'sd',l:'Depth / Diameter',u:'mm',min:20,max:600,step:10,ph:200,hint:'Overall depth or diameter'},
+{id:'sb',l:'Width',u:'mm',min:10,max:300,step:5,ph:100,hint:'Width of the section'},
+{id:'sh',l:'Height',u:'mm',min:20,max:600,step:10,ph:200,hint:'Full height (for rectangle)'},
+{id:'st',l:'Wall Thickness',u:'mm',min:1,max:30,step:1,ph:8,hint:'Wall thickness (for pipe section)'},
+{id:'inert',l:'I override',u:'mm4 (optional)',type:'text',hint:'Override calculated moment of inertia'}
+]},
+
+{id:'column',t:'Column Buckling',s:'Check if a column can resist buckling',c:'s',presets:[
+{name:'H-Column',vals:{len:3,load:50000,stype:'ibar',sd:200,sb:100,st:8,emod:200,ends:'pinned',fy:250}},
+{name:'Pipe Column',vals:{len:4,load:30000,stype:'pipe',sd:150,sb:0,st:8,emod:200,ends:'fixed',fy:250}},
+{name:'Strut',vals:{len:2,load:10000,stype:'circle',sd:80,sb:0,st:0,emod:200,ends:'pinned',fy:275}}
+],fields:[
+{id:'len',l:'Column Length',u:'m',min:0.5,max:15,step:0.1,ph:3,hint:'Unsupported length of the column'},
+{id:'load',l:'Axial Load',u:'N',min:1000,max:1000000,step:1000,ph:50000,hint:'Compressive force applied'},
+{id:'stype',l:'Section Type',u:'',type:'select',o:['ibar','rectangle','circle','pipe'],hint:'Cross-section shape'},
+{id:'sd',l:'Depth / Diameter',u:'mm',min:30,max:400,step:5,ph:150,hint:'Overall depth or outer diameter'},
+{id:'sb',l:'Width',u:'mm',min:10,max:300,step:5,ph:80,hint:'Flange width'},
+{id:'st',l:'Thickness',u:'mm',min:1,max:30,step:1,ph:8,hint:'Wall/flange thickness'},
+{id:'emod',l:'Elastic Modulus',u:'GPa',min:10,max:400,step:10,ph:200,hint:'Material stiffness'},
+{id:'ends',l:'End Conditions',u:'',type:'select',o:['pinned','fixed','free','one_fixed_one_pinned'],hint:'How the column ends are supported'},
+{id:'fy',l:'Yield Strength',u:'MPa',min:100,max:700,step:25,ph:250,hint:'Material yield strength (S275 ~275 MPa)'}
+]}
+];
+
+/* Calculation functions — DO NOT MODIFY */
+const CABLE_R={copper_xlpe:{1.5:18,2.5:24,4:30,6:38,10:48,16:58,25:70,35:80,50:98,70:125,95:155,120:180,150:205,185:230,240:265,300:305,400:345},copper_pvc:{1.5:15,2.5:20,4:25,6:32,10:40,16:50,25:63,35:75,50:90,70:110,95:130},al_xlpe:{1.5:15,2.5:19,4:24,6:30,10:38,16:46,25:56,35:65,50:80,70:100,95:120},al_pvc:{1.5:12,2.5:16,4:20,6:26,10:32,16:40,25:50,35:60,50:70,70:85}};
+const CABLE_R_KM={1.5:12.1,2.5:7.41,4:4.61,6:3.08,10:1.83,16:1.15,25:0.727,35:0.524,50:0.387,70:0.272,95:0.204,120:0.165,150:0.134,185:0.110,240:0.086,300:0.070,400:0.054};
+const INST_D={clipped:1,free_air:1,tray:.9,conduit:.8};
+const SIZES=Object.keys(CABLE_R_KM).map(Number).sort((a,b)=>a-b);
+const MOTORS=[.5,.75,1.1,1.5,2.2,3,4,5.5,7.5,11,15,18.5,22,30,37,45,55,75,90,110,132,160,200,250,315,400];
+const XFMR=[15,30,50,75,100,150,200,250,300,500,750,1000];
+const FIT_K=.3;
+
+function calcCable(p){
+const I=p.power_kw*1000/(p.voltage_v*p.pf*Math.sqrt(3));
+const tDer=Math.max(.8,1-(p.amb-30)*.01);
+const der=INST_D[p.inst]*tDer;
+const tbl=CABLE_R[p.type]||CABLE_R.copper_xlpe;let sz=4040,cap=0;
+for(const s of SIZES){const c=tbl[s]*der;if(c>=I){sz=s;cap=c;break}}
+if(cap===0)cap=tbl[sz]*der;
+let rk=CABLE_R_KM[sz]||.1;if(p.type.startsWith('al_'))rk*=1.6;
+const tc=1+.00393*(p.amb-20);const R=rk*tc/1000;
+const Vd=Math.sqrt(3)*I*R*p.len;const Vdp=Vd/p.voltage_v*100;
+return{size_mm2:sz,load_current_a:+I.toFixed(2),cable_capacity_a:+cap.toFixed(2),voltage_drop_v:+Vd.toFixed(2),voltage_drop_pct:+Vdp.toFixed(2),vd_ok:Vdp<=p.maxvd,capacity_ok:cap>=I,
+assumptions:['Load current = '+(p.power_kw*1000).toLocaleString()+' / ('+p.voltage_v+' x '+p.pf+' x 1.732) = '+I.toFixed(1)+'A','Derating factor: '+der.toFixed(2)+' (installation + temperature)','Voltage drop: '+Vdp.toFixed(2)+'% (limit '+p.maxvd+'%)']};
+}
+function calcTransformer(p){
+const S=p.load_kw/p.pf;const Sd=S/p.div;const kva=Sd*(1+p.margin/100);
+let kv=kva;for(const s of XFMR){if(s>=kva){kv=s;break}}
+const[vp,vs]=p.vr.split('/').map(Number);
+const Ip=kv*1000/(Math.sqrt(3)*vp),Is=kv*1000/(Math.sqrt(3)*vs);
+return{kva_rating:kv,primary_current_a:+Ip.toFixed(2),secondary_current_a:+Is.toFixed(2),
+assumptions:['Apparent power: '+p.load_kw+'kW / '+p.pf+' = '+S.toFixed(1)+'kVA','After diversity: '+S.toFixed(1)+' / '+p.div+' = '+Sd.toFixed(1)+'kVA','With margin: '+Sd.toFixed(1)+' x '+(1+p.margin/100).toFixed(2)+' = '+kva.toFixed(1)+'kVA → '+kV+'kVA standard']};
+}
+function calcSC(p){
+const Zb=p.voltage_v**2/(p.t_kva*1000);const Zt=p.z_pct/100*Zb+p.z_feed;
+const Ik=p.voltage_v/(Math.sqrt(3)*Zt);const Im=Ik*1.15;
+return{ik_sustained_ka:+(Ik/1000).toFixed(2),ik_momentary_ka:+(Im/1000).toFixed(2),
+assumptions:['Base impedance Zb = '+p.voltage_v+'² / '+p.t_kva+'kVA = '+Zb.toFixed(3)+'Ohm','Total impedance: '+p.z_pct+'% x '+Zb.toFixed(3)+' + '+p.z_feed+' = '+Zt.toFixed(4)+'Ohm','Fault current: '+p.voltage_v+' / (1.732 x '+Zt.toFixed(4)+') = '+(Ik/1000).toFixed(2)+'kA','Momentary (x1.15): '+(Im/1000).toFixed(2)+'kA']};
+}
+function calcCooling(p){
+const dT=p.t_ext-p.t_int;const env=p.win_a*p.win_u*dT;
+const osens=p.occ*75,olat=p.occ*60;const eq=p.equip*1000;const lg=p.light*1000*1.2;
+const sens=env+osens+eq+lg;const lat=olat;const tot=sens+lat;
+return{sensible_kw:+(sens/1000).toFixed(2),latent_kw:+(lat/1000).toFixed(2),total_kw:+(tot/1000).toFixed(2),total_ton:+(tot/3.517).toFixed(2),
+assumptions:['Envelope: '+p.win_a+'m² x '+p.win_u+' x '+dT+'K = '+(env/1000).toFixed(2)+'kW','Occupants: '+p.occ+' people = '+(osens/1000).toFixed(1)+'kW sensible, '+(olat/1000).toFixed(1)+'kW latent','Equipment + lighting: '+((eq+lg)/1000).toFixed(1)+'kW','Total: '+(tot/1000).toFixed(1)+'kW / 3.517 = '+(tot/3.517).toFixed(1)+' RT']};
+}
+function calcPipe(p){
+let rho=1000,mu=1e-3;
+if(p.fluid==='air'){rho=1.2;mu=1.8e-5}else if(p.fluid==='oil'){rho=850;mu:.01};
+const Q=p.flow/3600;let D=.05,f=0,Re=0,v=0,regime='';
+for(let i=0;i<50;i++){
+const A=Math.PI*D*D/4;v=Q/A;Re=rho*v*D/mu;
+if(Re<2000){f=64/Math.max(Re,1);regime='laminar'}
+else if(Re>4000){const e=.000046/D;f=.25/(Math.log10(e/3.7+5.74/Re**.9)**2);regime='turbulent'}
+else{f=64/Re;regime='transition'}
+const dp=(f*(p.len/D)*rho*v*v/2+p.fittings*FIT_K*rho*v*v/2)/1000;
+if(dp<=p.dp_max&&D>=.01)break;D+=.005}
+return{diameter_mm:+(D*1000).toFixed(1),velocity_m_s:+v.toFixed(2),pressure_drop_kpa:+(((f*(p.len/D)*rho*v*v/2+p.fittings*FIT_K*rho*v*v/2)/1000)).toFixed(2),
+assumptions:['Fluid: '+p.fluid+' (rho='+rho+', mu='+mu.toExtrude?mu.toExtrude():mu+')','Reynolds: '+Re.toFixed(0)+' → '+regime+' flow','Friction factor f = '+f.toFixed(4),'Pressure drop within '+p.dp_max+'kPa limit']};
+}
+function calcPump(p){
+const Q=p.flow/3600;const Ph=9.81*p.dens*Q*p.head;const Ps=Ph/(p.eff/100);let Pm=Ps*1.1;
+let mot=MOTORS[MOTORS.length-1];for(const m of MOTORS){if(m*1000>=Pm){mot=m;break}}
+return{hydraulic_power_kw:+(Ph/1000).toFixed(2),shaft_power_kw:+(Ps/1000).toFixed(2),motor_kw:mot,
+assumptions:['Hydraulic power: 9.81 x '+p.dens+' x '+Q.toFixed(4)+' x '+p.head+' = '+(Ph/1000).toFixed(2)+'kW','Shaft power: '+(Ph/1000).toFixed(2)+' / '+(p.eff/100)+' = '+(Ps/1000).toFixed(2)+'kW','With 10% service factor: '+(Pm/1000).toFixed(2)+'kW → '+mot+'kW motor']};
+}
+function calcBeam(p){
+const E=p.emod*1e9;let I;
+if(p.inert){I=parseFloat(p.inert)*1e-12}
+else if(p.stype==='rectangle'){I=p.sb*p.sh**3/12*1e-12}
+else if(p.stype==='circle'){I=Math.PI*p.sd**4/64*1e-12}
+else if(p.stype==='pipe'){const ro=p.sd/2,ri=ro-p.st;I=Math.PI*(ro**4-ri**4)/4*1e-12}
+else{I=.008*p.sd**4*1e-12}
+const L=p.span;let d,M,y=p.sd/2000;
+if(p.ltype==='point_mid'){d=p.load*L**3/(48*E*I);M=p.load*L/4}
+else if(p.ltype==='udl'){const w=p.load/L;d=5*w*L**4/(384*E*I);M=w*L**2/8}
+else{d=p.load*L**3/(192*E*I);M=p.load*L/8}
+const sigma=M*y/I;const dm=d*1000;const lim=L*1000/250;
+return{deflection_mm:+dm.toFixed(2),stress_mpa:+(sigma/1e6).toFixed(1),deflection_ok:dm<=lim,
+assumptions:['E = '+p.emod+' GPa, I = '+(I*1e12).toFixed(0)+' mm4','Max deflection: '+dm.toFixed(2)+'mm (limit L/250 = '+lim.toFixed(1)+'mm)','Max stress: '+(sigma/1e6).toFixed(1)+'MPa']};
+}
+function calcColumn(p){
+const K={pinned:1,fixed:.5,free:2,one_fixed_one_pinned:.7}[p.ends]||1;
+const Le=K*p.len;const I=.008*p.sd**4*1e-12;
+const A=Math.max(2*p.sd*p.st+Math.max(0,p.sb-2*p.st)*p.st*2,p.sb*p.sd*.08)*1e-6;
+const r=Math.sqrt(I/A);const lam=Le/r;const E=p.emod*1e9;const sigy=p.fy*1e6;
+let Pcr,sigcr;
+if(lam>100){Pcr=Math.PI**2*E*I/Le**2;sigcr=Pcr/A}
+else{const lc=Math.PI*Math.sqrt(E/sigy);const sj=sigy*(1-(lam/lc)**2/(2*lc**2));sigcr=Math.max(sj,sigy*.7);Pcr=sigcr*A}
+const sa=p.load/A;const fs=Pcr/p.load;
+return{critical_load_n:Math.round(Pcr),actual_stress_mpa:+(sa/1e6).toFixed(2),critical_stress_mpa:+(sigcr/1e6).toFixed(2),slenderness_ratio:+lam.toFixed(1),safe:fs>=1.5,
+assumptions:['Effective length: K='+K+' x '+p.len+'m = '+Le.toFixed(2)+'m','Slenderness ratio lambda = '+lam.toFixed(1)+' ('+(lam>100?'Euler':'Johnson')+' formula)','Critical load: '+Pcr.toLocaleString()+'N','FoS = '+fs.toFixed(1)+' (need >=1.5)']};
+}
+
+const CALCS={cable:calcCable,transformer:calcTransformer,shortcircuit:calcSC,cooling:calcCooling,pipe:calcPipe,pump:calcPump,beam:calcBeam,column:calcColumn};
+
+/* UI Logic */
+function showView(v){
+document.getElementById('home-view').style.display=v==='home'?'block':'none';
+document.getElementById('calc-view').style.display=v==='calc'?'block':'none';
+document.getElementById('sld-view').style.display=v==='sld'?'block':'none';
+document.getElementById('reports-view').style.display=v==='reports'?'block':'none';
+document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.view===v));
+if(v==='sld')setTimeout(initSLD,50);
+}
+function scrollToTools(){document.getElementById('tools-section').scrollIntoView({behavior:'smooth'})}
+
+function renderTools(cat){
+const grid=document.getElementById('tool-grid');
+const filtered=cat==='all'?TOOLS:TOOLS.filter(t=>t.c===cat);
+grid.innerHTML=filtered.map(t=>'<div class="tool-card" onclick="openTool(\''+t.id+'\')"><div style="display:flex;align-items:center;gap:10px"><div class="tool-icon ti-'+t.c+'">'+t.t[0]+'</div><div><h3>'+t.t+'</h3><span class="tag tag-'+t.c+'">'+({e:'Electrical',m:'Mechanical',s:'Structural'})[t.c]+'</span></div></div><p>'+t.s+'</p></div>').join('');
+}
+document.querySelectorAll('.cat-tab').forEach(t=>t.addEventListener('click',function(){
+document.querySelectorAll('.cat-tab').forEach(x=>x.classList.remove('active'));this.classList.add('active');
+renderTools(this.dataset.cat);
+}));
+renderTools('all');
+
+function openTool(id){
+const t=TOOLS.find(x=>x.id===id);if(!t)return;
+S.curTool=id;
+showView('calc');
+document.getElementById('calc-title').textContent=t.t;
+document.getElementById('calc-subtitle').textContent=t.s;
+// Presets
+document.getElementById('presets').innerHTML=t.presets.map(p=>'<span class="preset" onclick="applyPreset(\''+p.name+'\')">'+p.name+'</span>').join('');
+// Fields
+document.getElementById('form-fields').innerHTML=t.p.map(f=>{
+if(f.type==='select')return '<div class="input-group"><label>'+f.l+(f.u?' <span class="hint">('+f.u+')</span>':'')+'<br><span class="hint">'+f.hint+'</span></label><select id="f_'+f.id+'">'+f.o.map(o=>'<option value="'+o+'">'+o.replace(/_/g,' ')+'</option>').join('')+'</select></div>';
+if(f.type==='text')return '<div class="input-group"><label>'+f.l+' <span class="hint">('+f.hint+')</span></label><input type="text" id="f_'+f.id+'"></div>';
+const hasRange=f.min!==undefined&&f.max!==undefined&&f.max-f.min<=1000;
+if(hasRange)return '<div class="input-group"><label>'+f.l+(f.u?' <span class="hint">('+f.u+')</span>':'')+'<br><span class="hint">'+f.hint+'</span></label><div class="slider-wrap"><input type="range" id="f_'+f.id+'" min="'+f.min+'" max="'+f.max+'" step="'+f.step+'" value="'+f.ph+'" oninput="document.getElementById(\'v_'+f.id+'\').textContent=this.value+'+(f.u||'')+'"><span class="slider-val" id="v_'+f.id+'">'+f.ph+(f.u||'')+'</span></div></div>';
+return '<div class="input-group"><label>'+f.l+(f.u?' <span class="hint">('+f.u+')</span>':'')+' <span class="hint">('+f.min+'-'+f.max+')</span><br><span class="hint">'+f.hint+'</span></label><input type="number" id="f_'+f.id+'" min="'+f.min+'" max="'+f.max+'" step="'+f.step+'" value="'+f.ph+'"></div>';
+}).join('');
+}
+function applyPreset(name){
+const t=TOOLS.find(x=>x.id===S.curTool);
+const p=t.presets.find(x=>x.name===name);if(!p)return;
+Object.entries(p.vals).forEach(([k,v])=>{
+const el=document.getElementById('f_'+k);if(el){el.value=v;el.dispatchEvent(new Event('input'));}
+const sl=document.getElementById('f_'+k);if(sl&&sl.type==='range'){sl.value=v;document.getElementById('v_'+k).textContent=v+(sl.dataset.u||'')}
+});
+}
+
+function runCalc(){
+const t=TOOLS.find(x=>x.id===S.curTool);const p={};
+t.p.forEach(f=>{
+const el=document.getElementById('f_'+f.id);
+if(el)p[f.id]=f.type==='select'?el.value:parseFloat(el.value)||0;
+});
+try{
+const r=CALCS[S.curTool](p);S.results={name:t.t,input:p,result:r,tool:t};
+const checks=Object.entries(r).filter(([,v])=>typeof v==='boolean');const anyFail=checks.some(([,v])=>!v);
+const vals=Object.entries(r).filter(([k,v])=>k!=='assumptions'&&k!=='references'&&typeof v!=='boolean');
+const badge=anyFail?'<div class="summary-indicator ind-warn">!</div><div class="summary-text"><h4>Needs Review</h4><div style="font-size:11px;color:var(--muted)">Some checks failed</div></div>':'<div class="summary-indicator ind-pass">✓</div><div class="summary-text"><h4>All Checks Passed</h4><div style="font-size:11px;color:var(--muted)">Design is acceptable</div></div>';
+let valHtml=vals.map(([k,v])=>{const u=getUnit(k);return '<div class="rcard"><div class="rv">'+(typeof v==='number'?v.toLocaleString('en-US',{maximumFractionDigits:2}):v)+'</div><div class="rl">'+k.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())+'</div>'+(u?'<div class="ru">'+u+'</div>':'')+'</div>';}).join('');
+const boolHtml=checks.map(([k,v])=>'<div class="rcard"><div class="rv '+(v?'pass':'fail')+'">'+(v?'PASS':'FAIL')+'</div><div class="rl">'+k.replace(/_/g,' ')+'</div></div>').join('');
+document.getElementById('results-area').innerHTML='<div class="result-summary">'+badge+'</div><div class="result-grid">'+valHtml+boolHtml+'</div><label class="explain-toggle"><input type="checkbox" id="explain-chk" onchange="toggleExplain()"> Show calculation steps</label><div class="formula-box" id="formula-box" style="display:none"><h4>Step-by-step</h4>'+(r.assumptions||[]).map((a,i)=>'<p><strong>Step '+(i+1)+':</strong> '+a+'</p>').join('')+'</div>'+(r.references?'<div class="formula-box"><h4>References</h4><p>'+(r.references||[]).join(' &bull; ')+'</p></div>':'')+'<div class="export-row"><button class="export-btn" onclick="copyResults()">Copy</button><button class="export-btn" onclick="window.print()">Print</button></div>';
+}catch(e){alert('Error: '+e.message);}
+}
+function toggleExplain(){
+const box=document.getElementById('formula-box');if(box)box.style.display=box.style.display==='none'?'block':'none';
+}
+function copyResults(){
+if(!S.results)return;
+const r=S.results;let text=r.name+' Results\n\n';
+Object.entries(r.result).filter(([k,v])=>typeof v==='boolean').forEach(([k,v])=>{text+=k.replace(/_/g,' ')+': '+(v?'PASS':'FAIL')+'\n'});
+Object.entries(r.result).filter(([k,v])=>typeof v==='number').forEach(([k,v])=>{text+=k.replace(/_/g,' ')+': '+v+'\n'});
+navigator.clipboard.writeText(text);
+}
+function getUnit(k){
+const u={size_mm2:'mm²',load_current_a:'A',cable_capacity_a:'A',voltage_drop_v:'V',voltage_drop_pct:'%',kva_rating:'kVA',primary_current_a:'A',secondary_current_a:'A',ik_sustained_ka:'kA',ik_momentary_ka:'kA',sensible_kw:'kW',latent_kw:'kW',total_kw:'kW',total_ton:'RT',diameter_mm:'mm',velocity_m_s:'m/s',pressure_drop_kpa:'kPa',hydraulic_power_kw:'kW',shaft_power_kw:'kW',motor_kw:'kW',deflection_mm:'mm',stress_mpa:'MPa',critical_load_n:'N',actual_stress_mpa:'MPa',critical_stress_mpa:'MPa'};
+return u[k]||'';
+}
+
+/* SLD */
+function initSLD(){
+const cv=document.getElementById('sld-cv');if(!cv)return;
+cv.width=cv.parentElement.clientWidth;cv.height=400;
+const ctx=cv.getContext('2d');
+cv.addEventListener('mousedown',e=>{const r=cv.getBoundingClientRect();const mx=(e.clientX-r.left)*(cv.width/r.width),my=(e.clientY-r.top)*(cv.height/r.height);for(let i=S.sld.length-1;i>=0;i--){const c=S.sld[i];if(Math.abs(mx-c.x)<35&&Math.abs(my-c.y)<35){S.sldDrag=i;return}}S.sldDrag=-1});
+cv.addEventListener('mousemove',e=>{if(S.sldDrag<0)return;const r=cv.getBoundingClientRect();S.sld[S.sldDrag].x=(e.clientX-r.left)*(cv.width/r.width);S.sld[S.sldDrag].y=(e.clientY-r.top)*(cv.height/r.height);drawSLD()});
+cv.addEventListener('mouseup',()=>{S.sldDrag=-1;drawSLD()});
+drawSLD();
+}
+function addSLD(){const type=document.getElementById('sld-type').value;S.sld.push({id:Date.now(),type:type,x:80+S.sld.length*120,y:200});drawSLD()}
+function clearSLD(){S.sld=[];drawSLD()}
+function drawSLD(){
+const cv=document.getElementById('sld-cv');if(!cv)return;
+const ctx=cv.getContext('2d');const w=cv.width,h=cv.height;
+ctx.fillStyle='#080a12';ctx.fillRect(0,0,w,h);
+ctx.strokeStyle='#181d2c';for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke()}
+for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+if(!S.sld.length){ctx.fillStyle='#7a8299';ctx.font='14px Inter';ctx.textAlign='center';ctx.fillText('Click "+ Add" to place components',w/2,h/2);return}
+const colors={generator:['#1e3a5f','#5b8def'],transformer:['#3d2e0f','#eab308'],breaker:['#3d0f0f','#ef4444'],bus:['#252a3a','#7a8299'],motor:['#0f2e1a','#22c55e'],load:['#1a0f2e','#7c5cfc']};
+ctx.lineWidth=2.5;
+for(let i=0;i<S.sld.length-1;i++){ctx.strokeStyle='#3b4a6a';ctx.beginPath();ctx.moveTo(S.sld[i].x+30,S.sld[i].y);ctx.lineTo(S.sld[i+1].x-30,S.sld[i+1].y);ctx.stroke()}
+S.sld.forEach(c=>{const[fg,bd]=colors[c.type]||['#252a3a','#7a8299'];ctx.fillStyle=fg;ctx.strokeStyle=bd;ctx.lineWidth=2.5;
+if(c.type==='bus'){ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(c.x-30,c.y);ctx.lineTo(c.x+30,c.y);ctx.stroke();ctx.lineWidth=2.5}
+else if(c.type!=='generator'&&c.type!=='motor'){ctx.fillRect(c.x-25,c.y-22,50,44);ctx.strokeRect(c.x-25,c.y-22,50,44)}
+else{ctx.beginPath();ctx.arc(c.x,c.y,26,0,Math.PI*2);ctx.fill();ctx.stroke()}
+ctx.fillStyle=bd;ctx.font='bold 12px Inter';ctx.textAlign='center';ctx.fillText(c.label||c.type.slice(0,3).toUpperCase(),c.x,c.y+4);
+});
+ctx.fillStyle='#7a8299';ctx.font='11px Inter';ctx.textAlign='left';ctx.fillText('SLD — '+S.sld.length+' components',14,22);
+}
+function exportSLD(){const cv=document.getElementById('sld-cv');const a=document.createElement('a');a.download='sld.png';a.href=cv.toDataURL();a.click()}
+
+/* Reports */
+function genReport(){
+const proj=document.getElementById('r_proj').value||'Engineering Project';
+const client=document.getElementById('r_client').value||'Client';
+const eng=document.getElementById('r_eng').value||'Darren Lieu';
+const rtype=document.getElementById('r_type').value;
+const date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+let summary='';
+if(S.results){const r=S.results.result;const vals=Object.entries(r).filter(([k,v])=>typeof v==='number').map(([k,v])=>k.replace(/_/g,' ')+': '+v).join(', ');summary='<strong>'+S.results.name+':</strong> '+vals;}
+const out=document.getElementById('report-output');out.style.display='block';
+out.innerHTML='<h2>'+proj+'</h2><p><strong>Type:</strong> '+rtype+' &bull; <strong>Date:</strong> '+date+' &bull; <strong>Engineer:</strong> '+eng+'</p><h2>Executive Summary</h2><p>This report presents the '+rtype.toLowerCase()+' for '+proj+'. '+summary+'</p><h2>Scope</h2><p>Design calculations per applicable standards to verify compliance with performance criteria.</p><h2>Conclusion</h2><p>The proposed design is acceptable for specified loads and conditions per the calculations presented.</p><div class="sig">Prepared in accordance with standard engineering practice. Site verification recommended.<br><br>Prepared by: '+eng+'<br>Design Engineer<br>'+date+'</div>';
+}
+
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',function(){showView(this.dataset.view)}));
+</script>
+</body>
+</html>

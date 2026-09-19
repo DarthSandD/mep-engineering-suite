@@ -1,0 +1,64 @@
+Build a complete, production-quality single-file HTML engineering tool. Write to: /c/Users/USER/mechanical-automation-site-v2/index.html
+
+## What to Build
+
+A self-contained Mechanical Engineering Automation Platform — all calculations run client-side in JavaScript, no backend needed.
+
+## Design Requirements
+
+- Modern dark theme with professional engineering aesthetic
+- Smooth animations, glassmorphism touches, subtle grid background
+- Responsive sidebar + main content layout
+- Color-coded results cards (green=pass, red=fail, yellow=warn)
+- Inter + JetBrains Mono fonts from Google Fonts
+
+## 8 Calculation Tools
+
+Each tool has: form inputs → calculate button → results display
+
+1. **Cable Sizing** (IEC 60364 / BS 7671): power, voltage, PF, length, cable type (copper_pvc/copper_xlpe/al_pvc/al_xlpe), installation method, max VD%, ambient temp → size mm², load current, capacity, voltage drop %, pass/fail
+2. **Transformer Sizing**: load kW, PF, diversity factor, margin %, voltage ratio → kVA, primary/secondary current
+3. **Short Circuit**: transformer kVA, voltage, impedance%, feeder impedance → momentary & sustained fault current kA
+4. **Cooling Load**: area, ceiling height, occupants, equipment kW, lighting kW, window area, U-value, ext/int temp → sensible, latent, total kW & tons refrigeration
+5. **Pipe Sizing** (Darcy-Weisbach): flow rate, length, max pressure drop, fluid (water/air/oil), fittings → diameter mm, velocity, actual pressure drop
+6. **Pump Sizing**: flow rate, total head, density, efficiency% → hydraulic power, shaft power, motor kW (standard sizes)
+7. **Beam Deflection**: span, load, load type (point/UDL/fixed), E modulus, section type & dimensions → deflection mm, stress MPa, pass/fail vs L/250
+8. **Column Buckling** (Euler/Johnson): length, load, section, end conditions, yield strength → critical load, slenderness ratio, FoS, safe/unsafe
+
+## Additional Features
+
+**SLD Builder**: Drag-and-drop canvas (generator, transformer, breaker, bus, motor, load). Click to add, drag to move. Export as SVG.
+
+**Report Generator**: Generate professional engineering report from any calculation result. Sections: cover, executive summary, scope, input data, methodology, results, discussion, conclusion, assumptions, references, signature block.
+
+## Calculation Logic (Port from Python — keep formulas exact)
+
+**Cable**: I_load = P/(V*PF*sqrt(3)); derate by installation method + ambient temp; iterate standard sizes; R from table * temp correction; Vd = sqrt(3)*I*R*L
+
+**Transformer**: S = kW/PF; diversified = S/diversity; kVA = div*(1+margin%); pick next standard size
+
+**Short Circuit**: Z_base = V²/S_kVA; Z_total = Z%*Z_base + Z_feeder; Ik = V/(sqrt(3)*Z); momentary = Ik*1.15
+
+**Cooling Load**: envelope = win_area*U*ΔT; occupants 75W sens + 60W lat each; equipment direct; lighting*1.2; total/3.517 = tons
+
+**Pipe**: Iterate D from 50mm up; A=πD²/4; v=Q/A; Re=ρvD/μ; f from laminar(64/Re) or Colebrook; dp = f*(L/D)*(ρv²/2) + ΣK*(ρv²/2); stop when dp < max
+
+**Pump**: P_hyd = ρgQH; P_shaft = P_hyd/η; motor = next standard size above P_shaft*1.1
+
+**Beam**: Point mid: δ = PL³/(48EI); UDL: δ = 5wL⁴/(384EI); Fixed: δ = PL³/(192EI); limit L/250; stress = M*y/I
+
+**Column**: λ = L_eff/r_min; if λ>100: Euler P_cr = π²EI/L²; else Johnson; FoS = P_cr/P_applied; safe if FoS≥1.5
+
+## Standard Cable Sizes (mm²)
+1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95, 120, 150, 185, 240, 300, 400
+
+## Standard Motor Sizes (kW)
+0.5, 0.75, 1.1, 1.5, 2.2, 3.0, 4.0, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315, 400
+
+## Standard Transformer Sizes (kVA)
+15, 30, 50, 75, 100, 150, 200, 250, 300, 500, 750, 1000
+
+## Output
+
+Single file: `/c/Users/USER/mechanical-automation-site-v2/index.html`
+Complete, production-ready, no TODOs or placeholders.
