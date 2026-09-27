@@ -343,8 +343,8 @@ function calcCooling(p){
 const dT=p.t_ext-p.t_int;const env=p.win_a*p.win_u*dT;
 const osens=p.occ*75,olat=p.occ*60;const eq=p.equip*1000;const lg=p.light*1000*1.2;
 const sens=env+osens+eq+lg;const lat=olat;const tot=sens+lat;
-return{sensible_kw:+(sens/1000).toFixed(2),latent_kw:+(lat/1000).toFixed(2),total_kw:+(tot/1000).toFixed(2),total_ton:+(tot/3.517).toFixed(2),
-assumptions:['Envelope: '+p.win_a+'m² x '+p.win_u+' x '+dT+'K = '+(env/1000).toFixed(2)+'kW','Occupants: '+p.occ+' people = '+(osens/1000).toFixed(1)+'kW sensible, '+(olat/1000).toFixed(1)+'kW latent','Equipment + lighting: '+((eq+lg)/1000).toFixed(1)+'kW','Total: '+(tot/1000).toFixed(1)+'kW / 3.517 = '+(tot/3.517).toFixed(1)+' RT']};
+return{sensible_kw:+(sens/1000).toFixed(2),latent_kw:+(lat/1000).toFixed(2),total_kw:+(tot/1000).toFixed(2),total_ton:+(tot/1000/3.517).toFixed(2),
+assumptions:['Envelope: '+p.win_a+'m² x '+p.win_u+' x '+dT+'K = '+(env/1000).toFixed(2)+'kW','Occupants: '+p.occ+' people = '+(osens/1000).toFixed(1)+'kW sensible, '+(olat/1000).toFixed(1)+'kW latent','Equipment + lighting: '+((eq+lg)/1000).toFixed(1)+'kW','Total: '+(tot/1000).toFixed(1)+'kW / 3.517 = '+(tot/1000/3.517).toFixed(2)+' RT']};
 }
 function calcPipe(p){
 let rho=1000,mu=1e-3;
