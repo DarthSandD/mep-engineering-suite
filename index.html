@@ -331,7 +331,7 @@ let kv=kva;for(const s of XFMR){if(s>=kva){kv=s;break}}
 const[vp,vs]=p.vr.split('/').map(Number);
 const Ip=kv*1000/(Math.sqrt(3)*vp),Is=kv*1000/(Math.sqrt(3)*vs);
 return{kva_rating:kv,primary_current_a:+Ip.toFixed(2),secondary_current_a:+Is.toFixed(2),
-assumptions:['Apparent power: '+p.load_kw+'kW / '+p.pf+' = '+S.toFixed(1)+'kVA','After diversity: '+S.toFixed(1)+' / '+p.div+' = '+Sd.toFixed(1)+'kVA','With margin: '+Sd.toFixed(1)+' x '+(1+p.margin/100).toFixed(2)+' = '+kva.toFixed(1)+'kVA → '+kV+'kVA standard']};
+assumptions:['Apparent power: '+p.load_kw+'kW / '+p.pf+' = '+S.toFixed(1)+'kVA','After diversity: '+S.toFixed(1)+' / '+p.div+' = '+Sd.toFixed(1)+'kVA','With margin: '+Sd.toFixed(1)+' x '+(1+p.margin/100).toFixed(2)+' = '+kva.toFixed(1)+'kVA → '+kv+'kVA standard']};
 }
 function calcSC(p){
 const Zb=p.voltage_v**2/(p.t_kva*1000);const Zt=p.z_pct/100*Zb+p.z_feed;
@@ -358,7 +358,7 @@ else{f=64/Re;regime='transition'}
 const dp=(f*(p.len/D)*rho*v*v/2+p.fittings*FIT_K*rho*v*v/2)/1000;
 if(dp<=p.dp_max&&D>=.01)break;D+=.005}
 return{diameter_mm:+(D*1000).toFixed(1),velocity_m_s:+v.toFixed(2),pressure_drop_kpa:+(((f*(p.len/D)*rho*v*v/2+p.fittings*FIT_K*rho*v*v/2)/1000)).toFixed(2),
-assumptions:['Fluid: '+p.fluid+' (rho='+rho+', mu='+mu.toExtrude?mu.toExtrude():mu+')','Reynolds: '+Re.toFixed(0)+' → '+regime+' flow','Friction factor f = '+f.toFixed(4),'Pressure drop within '+p.dp_max+'kPa limit']};
+assumptions:['Fluid: '+p.fluid+' (rho='+rho+', mu='+mu+')','Reynolds: '+Re.toFixed(0)+' → '+regime+' flow','Friction factor f = '+f.toFixed(4),'Pressure drop within '+p.dp_max+'kPa limit']};
 }
 function calcPump(p){
 const Q=p.flow/3600;const Ph=9.81*p.dens*Q*p.head;const Ps=Ph/(p.eff/100);let Pm=Ps*1.1;
@@ -387,11 +387,12 @@ const Le=K*p.len;const I=.008*p.sd**4*1e-12;
 const A=Math.max(2*p.sd*p.st+Math.max(0,p.sb-2*p.st)*p.st*2,p.sb*p.sd*.08)*1e-6;
 const r=Math.sqrt(I/A);const lam=Le/r;const E=p.emod*1e9;const sigy=p.fy*1e6;
 let Pcr,sigcr;
-if(lam>100){Pcr=Math.PI**2*E*I/Le**2;sigcr=Pcr/A}
-else{const lc=Math.PI*Math.sqrt(E/sigy);const sj=sigy*(1-(lam/lc)**2/(2*lc**2));sigcr=Math.max(sj,sigy*.7);Pcr=sigcr*A}
+const lc=Math.PI*Math.sqrt(2*E/sigy);
+if(lam>lc){Pcr=Math.PI**2*E*I/Le**2;sigcr=Pcr/A}
+else{sigcr=sigy*(1-(sigy*lam*lam)/(4*Math.PI**2*E));Pcr=sigcr*A}
 const sa=p.load/A;const fs=Pcr/p.load;
 return{critical_load_n:Math.round(Pcr),actual_stress_mpa:+(sa/1e6).toFixed(2),critical_stress_mpa:+(sigcr/1e6).toFixed(2),slenderness_ratio:+lam.toFixed(1),safe:fs>=1.5,
-assumptions:['Effective length: K='+K+' x '+p.len+'m = '+Le.toFixed(2)+'m','Slenderness ratio lambda = '+lam.toFixed(1)+' ('+(lam>100?'Euler':'Johnson')+' formula)','Critical load: '+Pcr.toLocaleString()+'N','FoS = '+fs.toFixed(1)+' (need >=1.5)']};
+assumptions:['Effective length: K='+K+' x '+p.len+'m = '+Le.toFixed(2)+'m','Slenderness ratio lambda = '+lam.toFixed(1)+' ('+(lam>lc?'Euler':'Johnson')+' formula, transition at '+lc.toFixed(0)+')','Critical load: '+Pcr.toLocaleString()+'N','FoS = '+fs.toFixed(1)+' (need >=1.5)']};
 }
 
 const CALCS={cable:calcCable,transformer:calcTransformer,shortcircuit:calcSC,cooling:calcCooling,pipe:calcPipe,pump:calcPump,beam:calcBeam,column:calcColumn};
@@ -427,7 +428,7 @@ document.getElementById('calc-subtitle').textContent=t.s;
 // Presets
 document.getElementById('presets').innerHTML=t.presets.map(p=>'<span class="preset" onclick="applyPreset(\''+p.name+'\')">'+p.name+'</span>').join('');
 // Fields
-document.getElementById('form-fields').innerHTML=t.p.map(f=>{
+document.getElementById('form-fields').innerHTML=t.fields.map(f=>{
 if(f.type==='select')return '<div class="input-group"><label>'+f.l+(f.u?' <span class="hint">('+f.u+')</span>':'')+'<br><span class="hint">'+f.hint+'</span></label><select id="f_'+f.id+'">'+f.o.map(o=>'<option value="'+o+'">'+o.replace(/_/g,' ')+'</option>').join('')+'</select></div>';
 if(f.type==='text')return '<div class="input-group"><label>'+f.l+' <span class="hint">('+f.hint+')</span></label><input type="text" id="f_'+f.id+'"></div>';
 const hasRange=f.min!==undefined&&f.max!==undefined&&f.max-f.min<=1000;
@@ -446,7 +447,7 @@ const sl=document.getElementById('f_'+k);if(sl&&sl.type==='range'){sl.value=v;do
 
 function runCalc(){
 const t=TOOLS.find(x=>x.id===S.curTool);const p={};
-t.p.forEach(f=>{
+t.fields.forEach(f=>{
 const el=document.getElementById('f_'+f.id);
 if(el)p[f.id]=f.type==='select'?el.value:parseFloat(el.value)||0;
 });
